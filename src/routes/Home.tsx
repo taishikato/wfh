@@ -21,7 +21,7 @@ const Home = () => {
           <Typography>
             <Title level={3}>What are going to do today?</Title>
             <Form {...layout} name="nest-messages" onFinish={onFinish}>
-              <Form.Item name={['user', 'introduction']}>
+              <Form.Item name="task">
                 <Input.TextArea />
               </Form.Item>
               <Form.Item>
