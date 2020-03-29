@@ -1,9 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import wfhdog from '../assets/img/wfhdog.gif'
 import { Button, Col, Form, Input, Row, Typography, Comment, Tooltip, Avatar } from 'antd'
 import moment from 'moment'
-import { DislikeOutlined, LikeOutlined, DislikeFilled, LikeFilled } from '@ant-design/icons'
-// import { Store } from 'antd/lib/form/Form'
+import getUnixTime from '../plugins/getUnixTime'
 import firebase from '../plugins/firebase'
 import 'firebase/firestore'
 
@@ -17,13 +16,29 @@ const layout = {
 
 const Home = () => {
   const [form] = Form.useForm()
+  const [declarations, setDeclarations] = useState<firebase.firestore.DocumentData[]>([])
   const onFinish = async (values: any) => {
-    console.log(values)
-    await db.collection('declarations').add({
+    const newDeclarations = {
       text: values.declaration,
-    })
+      created: getUnixTime(),
+    }
+    await db.collection('declarations').add(newDeclarations)
     form.resetFields()
+    const declarationsCopy = [...declarations]
+    declarationsCopy.unshift(newDeclarations)
+    setDeclarations(declarationsCopy)
   }
+  useEffect(() => {
+    const getDeclarations = async () => {
+      const declarationsShot = await db
+        .collection('declarations')
+        .orderBy('created', 'desc')
+        .get()
+      const declarationsData = declarationsShot.docs.map(doc => doc.data())
+      setDeclarations(declarationsData)
+    }
+    getDeclarations()
+  }, [])
   return (
     <div>
       <Row>
@@ -42,22 +57,19 @@ const Home = () => {
               </Button>
             </Form.Item>
           </Form>
-          <Comment
-            // actions={actions}
-            author={<a>Han Solo</a>}
-            avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" alt="Han Solo" />}
-            content={
-              <p>
-                We supply a series of design principles, practical patterns and high quality design resources (Sketch
-                and Axure), to help people create their product prototypes beautifully and efficiently.
-              </p>
-            }
-            datetime={
-              <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
-                <span>{moment().fromNow()}</span>
-              </Tooltip>
-            }
-          />
+          {declarations.map((declaration, index) => (
+            <Comment
+              key={index}
+              author={<a href="/">Han Solo</a>}
+              avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" alt="Han Solo" />}
+              content={<p>{declaration.text}</p>}
+              datetime={
+                <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
+                  <span>{moment().fromNow()}</span>
+                </Tooltip>
+              }
+            />
+          ))}
         </Col>
       </Row>
     </div>

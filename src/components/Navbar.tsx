@@ -6,8 +6,10 @@ const Navbar = () => {
     <div>
       <div className="logo" />
       <Menu mode="horizontal" defaultSelectedKeys={['2']}>
-        <Menu.Item key="1">WFH</Menu.Item>
-        <Button type="primary">Login</Button>
+        <Menu.Item>WFH</Menu.Item>
+        <Menu.Item>
+          <Button type="primary">Login</Button>
+        </Menu.Item>
       </Menu>
     </div>
   )
