@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import wfhdog from '../assets/img/wfhdog.gif'
-import { Button, Col, Form, Input, Row, Typography, Comment, Tooltip, Avatar } from 'antd'
+import { Button, Col, Form, Input, Row, Typography, Comment, Tooltip, Avatar, Modal } from 'antd'
+import ModalWrapper from '../components/ModalWrapper'
+import FinishModalContent from '../components/FinishModalContent'
 import moment from 'moment'
 import getUnixTime from '../plugins/getUnixTime'
 import firebase from '../plugins/firebase'
@@ -16,6 +18,9 @@ const layout = {
 
 const Home = () => {
   const [form] = Form.useForm()
+  const [modalVisible, setModalVisible] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false)
+  const toggleConfirmLoading = (flg: boolean) => setConfirmLoading(flg)
   const [declarations, setDeclarations] = useState<firebase.firestore.DocumentData[]>([])
   const onFinish = async (values: any) => {
     const newDeclarations = {
@@ -30,15 +35,22 @@ const Home = () => {
   }
   useEffect(() => {
     const getDeclarations = async () => {
-      const declarationsShot = await db
-        .collection('declarations')
-        .orderBy('created', 'desc')
-        .get()
+      const declarationsShot = await db.collection('declarations').orderBy('created', 'desc').get()
       const declarationsData = declarationsShot.docs.map(doc => doc.data())
       setDeclarations(declarationsData)
     }
     getDeclarations()
   }, [])
+
+  const actions = [
+    <span key="comment-basic-like">
+      <Button type="ghost" size="small" onClick={() => setModalVisible(true)}>
+        Finish today's work?
+      </Button>
+      {/* <span className="comment-action">{likes}</span> */}
+    </span>,
+  ]
+
   return (
     <div>
       <Row>
@@ -59,6 +71,7 @@ const Home = () => {
           </Form>
           {declarations.map((declaration, index) => (
             <Comment
+              actions={actions}
               key={index}
               author={<a href="/">Han Solo</a>}
               avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" alt="Han Solo" />}
@@ -72,8 +85,25 @@ const Home = () => {
           ))}
         </Col>
       </Row>
+      {/* <ModalWrapper
+        render={(toggleConfirmLoading: (flg: boolean) => void, setModalVisible: (flg: boolean) => void) => (
+          <FinishModalContent toggleConfirmLoading={toggleConfirmLoading} setModalVisible={setModalVisible} />
+        )}
+      /> */}
+      <Modal
+        title="Summy of today's work"
+        visible={modalVisible}
+        confirmLoading={confirmLoading}
+        onOk={() => setModalVisible(false)}
+        onCancel={() => setModalVisible(false)}>
+        <FinishModalContent toggleConfirmLoading={toggleConfirmLoading} setModalVisible={setModalVisible} />
+      </Modal>
     </div>
   )
 }
 
 export default Home
+
+interface IChildProps {
+  setModalVisible: (flg: boolean) => void
+}

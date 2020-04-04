@@ -44,6 +44,7 @@
     ]
   },
   "devDependencies": {
+    "tslint": "^6.1.1",
     "tslint-config-prettier": "^1.18.0"
   }
 }
