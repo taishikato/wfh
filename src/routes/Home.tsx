@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import wfhdog from '../assets/img/wfhdog.gif'
-import { Button, Col, Form, Input, Row, Typography, Comment, Tooltip, Avatar, Modal } from 'antd'
+import { Button, Col, Form, Input, Row, Typography, Comment, Tooltip, Avatar, Modal, Card } from 'antd'
 import FinishModalContent from '../components/FinishModalContent'
 import moment from 'moment'
 import asyncForEach from '../plugins/asyncForEach'
@@ -92,10 +92,22 @@ const Home = () => {
                     <span>{moment().fromNow()}</span>
                   </Tooltip>
                 }>
-                {declaration.originalPost !== undefined && <p>{declaration.originalPost.text}</p>}
-                <Button type="ghost" size="small" onClick={() => handleClickButton(declaration.id)}>
-                  Finish today's work?
-                </Button>
+                {declaration.originalPost !== undefined && <Card>{declaration.originalPost.text}</Card>}
+                <span>
+                  <Button type="ghost" size="small" shape="round">
+                    Go Go!
+                  </Button>
+                </span>
+                <span>
+                  <Button type="ghost" size="small" shape="round">
+                    You did it!!
+                  </Button>
+                </span>
+                <div>
+                  <Button type="ghost" size="small" onClick={() => handleClickButton(declaration.id)}>
+                    Finish today's work?
+                  </Button>
+                </div>
               </Comment>
             </>
           ))}
