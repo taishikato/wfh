@@ -12,14 +12,16 @@ const layout = {
   wrapperCol: { span: 16 },
 }
 
-const FinishModalContent: React.FC<IProps> = ({ toggleConfirmLoading, setModalVisible }) => {
+const FinishModalContent: React.FC<IProps> = ({ toggleConfirmLoading, setModalVisible, postId }) => {
   const [form] = Form.useForm()
   const onFinish = async (values: any) => {
     toggleConfirmLoading(true)
     const newDeclarations = {
       text: values.declaration,
       created: getUnixTime(),
-      finishDeclaration: true,
+      summaryPost: true,
+      finished: true,
+      postId,
     }
     await db.collection('declarations').add(newDeclarations)
     toggleConfirmLoading(false)
@@ -47,4 +49,5 @@ export default FinishModalContent
 interface IProps {
   toggleConfirmLoading: (flg: boolean) => void
   setModalVisible: (flg: boolean) => void
+  postId: string
 }
