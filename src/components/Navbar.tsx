@@ -1,9 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Menu, Button, Modal } from 'antd'
 import LoginModalContent from './LoginModalContent'
+import IsLoginContext from '../contexts/IsLoginContext'
+import firebase from '../plugins/firebase'
+import 'firebase/auth'
 
 const Navbar = () => {
   const [modalVisible, setModalVisible] = useState(false)
+  const logout = async () => {
+    await firebase.auth().signOut()
+  }
+  const isLogin = useContext(IsLoginContext)
   return (
     <>
       <div>
@@ -11,9 +18,13 @@ const Navbar = () => {
         <Menu mode="horizontal" defaultSelectedKeys={['2']}>
           <Menu.Item>WFH</Menu.Item>
           <Menu.Item>
-            <Button type="primary" onClick={() => setModalVisible(true)}>
-              Login / Sign up
-            </Button>
+            {isLogin ? (
+              <Button onClick={logout}>Logout</Button>
+            ) : (
+              <Button type="primary" onClick={() => setModalVisible(true)}>
+                Login / Sign up
+              </Button>
+            )}
           </Menu.Item>
         </Menu>
       </div>

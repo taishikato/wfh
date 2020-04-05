@@ -2,7 +2,7 @@ import React from 'react'
 import { Form, Input, Button } from 'antd'
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons'
 
-const SignupForm: React.FC<IProps> = ({ handleMethod }) => (
+const SignupForm: React.FC<IProps> = ({ handleMethod, loading }) => (
   <Form name="normal_login" className="login-form" initialValues={{ remember: true }} onFinish={handleMethod}>
     <Form.Item name="username" rules={[{ required: true, message: 'Please input your Username!' }]}>
       <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
@@ -14,7 +14,7 @@ const SignupForm: React.FC<IProps> = ({ handleMethod }) => (
       <Input.Password prefix={<LockOutlined className="site-form-item-icon" />} placeholder="Password" />
     </Form.Item>
     <Form.Item>
-      <Button type="primary" htmlType="submit" className="login-form-button">
+      <Button type="primary" htmlType="submit" className="login-form-button" loading={loading}>
         Login
       </Button>
     </Form.Item>
@@ -25,4 +25,5 @@ export default SignupForm
 
 interface IProps {
   handleMethod: (values: any) => Promise<void>
+  loading: boolean
 }

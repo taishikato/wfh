@@ -2,7 +2,7 @@ import React from 'react'
 import { Form, Input, Button, Checkbox } from 'antd'
 import { MailOutlined, LockOutlined } from '@ant-design/icons'
 
-const LoginForm: React.FC<IProps> = ({ handleMethod }) => {
+const LoginForm: React.FC<IProps> = ({ handleMethod, loading }) => {
   return (
     <Form name="normal_login" className="login-form" initialValues={{ remember: true }} onFinish={handleMethod}>
       <Form.Item name="email" rules={[{ required: true, message: 'Please input your Email!' }]}>
@@ -12,12 +12,7 @@ const LoginForm: React.FC<IProps> = ({ handleMethod }) => {
         <Input.Password prefix={<LockOutlined className="site-form-item-icon" />} placeholder="Password" />
       </Form.Item>
       <Form.Item>
-        <Form.Item name="remember" valuePropName="checked" noStyle>
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit" className="login-form-button">
+        <Button type="primary" htmlType="submit" className="login-form-button" loading={loading}>
           Login
         </Button>
       </Form.Item>
@@ -29,4 +24,5 @@ export default LoginForm
 
 interface IProps {
   handleMethod: (values: any) => Promise<void>
+  loading: boolean
 }

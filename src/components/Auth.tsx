@@ -1,16 +1,19 @@
-import React, { useEffect } from 'react'
-import auth from '../plugins/auth'
+import React, { useEffect, useState } from 'react'
 import firebase from '../plugins/firebase'
-import 'firebase/auth'
+import IsLoginContext from '../contexts/IsLoginContext'
 
 const Auth: React.FC = props => {
+  const [isLogin, setIsLogin] = useState(false)
   useEffect(() => {
-    const authUser = async () => {
-      const user = await auth()
-    }
-    authUser()
-  }, [])
-  return <>{props.children}</>
+    firebase.auth().onAuthStateChanged((user: any) => {
+      if (user === null) {
+        setIsLogin(false)
+      } else {
+        setIsLogin(true)
+      }
+    })
+  }, [setIsLogin])
+  return <IsLoginContext.Provider value={isLogin}>{props.children}</IsLoginContext.Provider>
 }
 
 export default Auth
