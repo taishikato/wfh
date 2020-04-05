@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import wfhdog from '../assets/img/wfhdog.gif'
-import { Button, Col, Form, Input, Row, Typography, Comment, Tooltip, Avatar, Modal, Card } from 'antd'
-import FinishModalContent from '../components/FinishModalContent'
+import { Button, Col, Form, Row, Comment, Tooltip, Avatar, Modal, Card } from 'antd'
 import moment from 'moment'
+import { v4 as uuidv4 } from 'uuid'
+import FinishModalContent from '../components/FinishModalContent'
+import TaskForm from '../components/TaskForm'
 import asyncForEach from '../plugins/asyncForEach'
 import getUnixTime from '../plugins/getUnixTime'
 import firebase from '../plugins/firebase'
@@ -10,35 +12,49 @@ import 'firebase/firestore'
 
 const db = firebase.firestore()
 
-const { Title } = Typography
-const layout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 },
-}
-
 const Home = () => {
   const [form] = Form.useForm()
   const [modalVisible, setModalVisible] = useState(false)
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [postId, setPostId] = useState('')
-  const toggleConfirmLoading = (flg: boolean) => setConfirmLoading(flg)
-  const [declarations, setDeclarations] = useState<firebase.firestore.DocumentData[]>([])
   const onFinish = async (values: any) => {
-    const newDeclarations = {
+    const uuid = uuidv4().split('-').join('')
+    const newDeclarations: INewReport = {
       text: values.declaration,
       created: getUnixTime(),
       finished: false,
     }
-    await db.collection('declarations').add(newDeclarations)
+    await db.collection('declarations').doc(uuid).set(newDeclarations)
     form.resetFields()
+    newDeclarations.id = uuid
     const declarationsCopy = [...declarations]
     declarationsCopy.unshift(newDeclarations)
     setDeclarations(declarationsCopy)
   }
+  const onFinishSummary = async (values: any) => {
+    const uuid = uuidv4().split('-').join('')
+    toggleConfirmLoading(true)
+    const newDeclarations = {
+      text: values.declaration,
+      created: getUnixTime(),
+      summaryPost: true,
+      finished: true,
+      postId,
+    }
+    await db.collection('declarations').doc(uuid).set(newDeclarations)
+    const declarationsCopy = [...declarations]
+    declarationsCopy.unshift(newDeclarations)
+    setDeclarations(declarationsCopy)
+    toggleConfirmLoading(false)
+    form.resetFields()
+    setModalVisible(false)
+  }
+
+  const toggleConfirmLoading = (flg: boolean) => setConfirmLoading(flg)
+  const [declarations, setDeclarations] = useState<firebase.firestore.DocumentData[]>([])
   useEffect(() => {
     const getDeclarations = async () => {
       const declarationsShot = await db.collection('declarations').orderBy('created', 'desc').get()
-      // const declarationsData = declarationsShot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       const declarationsData: any = []
       await asyncForEach(declarationsShot.docs, async doc => {
         const dec = doc.data()
@@ -64,19 +80,7 @@ const Home = () => {
       <Row>
         <Col span={6} offset={6}>
           <img src={wfhdog} alt="dog" />
-          <Typography>
-            <Title level={3}>What are going to do today?</Title>
-          </Typography>
-          <Form {...layout} form={form} name="nest-messages" onFinish={onFinish}>
-            <Form.Item name="declaration">
-              <Input.TextArea />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
-            </Form.Item>
-          </Form>
+          <TaskForm form={form} onFinish={onFinish} />
           {declarations.map(declaration => (
             <>
               <Comment
@@ -122,6 +126,7 @@ const Home = () => {
           toggleConfirmLoading={toggleConfirmLoading}
           setModalVisible={setModalVisible}
           postId={postId}
+          onFinish={onFinishSummary}
         />
       </Modal>
     </div>
@@ -129,3 +134,10 @@ const Home = () => {
 }
 
 export default Home
+
+interface INewReport {
+  id?: string
+  text: string
+  created: number
+  finished: boolean
+}
