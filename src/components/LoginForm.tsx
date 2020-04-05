@@ -9,7 +9,7 @@ const LoginForm: React.FC<IProps> = ({ handleMethod }) => {
         <Input prefix={<MailOutlined className="site-form-item-icon" />} type="email" placeholder="Email" />
       </Form.Item>
       <Form.Item name="password" rules={[{ required: true, message: 'Please input your Password!' }]}>
-        <Input prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="Password" />
+        <Input.Password prefix={<LockOutlined className="site-form-item-icon" />} placeholder="Password" />
       </Form.Item>
       <Form.Item>
         <Form.Item name="remember" valuePropName="checked" noStyle>

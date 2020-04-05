@@ -1,12 +1,17 @@
 import React from 'react'
 import { Tabs, notification } from 'antd'
 import LoginForm from './LoginForm'
+import SignupForm from './SignupForm'
+import getUnixTime from '../plugins/getUnixTime'
 import firebase from '../plugins/firebase'
 import 'firebase/auth'
+import 'firebase/firestore'
+
+const db = firebase.firestore()
 
 const { TabPane } = Tabs
 
-const LoginModalContent = () => {
+const LoginModalContent: React.FC<IProps> = ({ setModalVisible }) => {
   const onFinishLogin = async (values: any) => {
     try {
       await firebase.auth().signInWithEmailAndPassword(values.email, values.password)
@@ -22,7 +27,13 @@ const LoginModalContent = () => {
   }
   const onFinishSignup = async (values: any) => {
     try {
-      await firebase.auth().createUserWithEmailAndPassword(values.email, values.password)
+      const result = await firebase.auth().createUserWithEmailAndPassword(values.email, values.password)
+      const user = result.user
+      await db.collection('users').doc(user!.uid).set({
+        displayName: values.username,
+        created: getUnixTime(),
+      })
+      setModalVisible(false)
     } catch (err) {
       let description = 'An error occured. Please try again.'
       if (err.code === 'auth/email-already-in-use') description = err.message
@@ -44,7 +55,7 @@ const LoginModalContent = () => {
           <LoginForm handleMethod={onFinishLogin} />
         </TabPane>
         <TabPane tab="Sign up" key="2">
-          <LoginForm handleMethod={onFinishSignup} />
+          <SignupForm handleMethod={onFinishSignup} />
         </TabPane>
       </Tabs>
     </div>
@@ -52,3 +63,7 @@ const LoginModalContent = () => {
 }
 
 export default LoginModalContent
+
+interface IProps {
+  setModalVisible: (flg: boolean) => void
+}

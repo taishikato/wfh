@@ -18,12 +18,11 @@ const Navbar = () => {
         </Menu>
       </div>
       <Modal
-        // title="Login / Sign up"
         footer={null}
         visible={modalVisible}
         onOk={() => setModalVisible(false)}
         onCancel={() => setModalVisible(false)}>
-        <LoginModalContent />
+        <LoginModalContent setModalVisible={setModalVisible} />
       </Modal>
     </>
   )
