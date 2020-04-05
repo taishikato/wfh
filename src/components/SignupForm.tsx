@@ -15,7 +15,7 @@ const SignupForm: React.FC<IProps> = ({ handleMethod, loading }) => (
     </Form.Item>
     <Form.Item>
       <Button type="primary" htmlType="submit" className="login-form-button" loading={loading}>
-        Login
+        Sign up
       </Button>
     </Form.Item>
   </Form>
