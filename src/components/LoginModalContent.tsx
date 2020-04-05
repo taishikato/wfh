@@ -1,39 +1,53 @@
 import React from 'react'
-import { Form, Input, Button, Checkbox } from 'antd'
-import { MailOutlined, LockOutlined } from '@ant-design/icons'
+import { Tabs, notification } from 'antd'
+import LoginForm from './LoginForm'
 import firebase from '../plugins/firebase'
+import 'firebase/auth'
+
+const { TabPane } = Tabs
 
 const LoginModalContent = () => {
-  const onFinish = async (values: any) => {
-    console.log('Received values of form: ', values)
-    await firebase.auth().createUserWithEmailAndPassword(values.email, values.password)
+  const onFinishLogin = async (values: any) => {
+    try {
+      await firebase.auth().signInWithEmailAndPassword(values.email, values.password)
+    } catch (err) {
+      let description = 'An error occured. Please try again.'
+      if (err.code === 'auth/user-not-found') {
+        description = 'There is no user record corresponding to this identifier. Please sign up.'
+      } else if (err.code === 'auth/wrong-password') {
+        description = err.message
+      }
+      openNotificationWithIcon('error', 'Error', description)
+    }
+  }
+  const onFinishSignup = async (values: any) => {
+    try {
+      await firebase.auth().createUserWithEmailAndPassword(values.email, values.password)
+    } catch (err) {
+      let description = 'An error occured. Please try again.'
+      if (err.code === 'auth/email-already-in-use') description = err.message
+      openNotificationWithIcon('error', 'Error', description)
+    }
+  }
+
+  const openNotificationWithIcon = (type: string, title: string, description: string) => {
+    ;(notification as any)[type]({
+      message: title,
+      description,
+    })
   }
 
   return (
-    <Form name="normal_login" className="login-form" initialValues={{ remember: true }} onFinish={onFinish}>
-      <Form.Item name="username" rules={[{ required: true, message: 'Please input your Email!' }]}>
-        <Input prefix={<MailOutlined className="site-form-item-icon" />} type="email" placeholder="Email" />
-      </Form.Item>
-      <Form.Item name="password" rules={[{ required: true, message: 'Please input your Password!' }]}>
-        <Input prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="Password" />
-      </Form.Item>
-      <Form.Item>
-        <Form.Item name="remember" valuePropName="checked" noStyle>
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
-
-        {/* <a className="login-form-forgot" href="/">
-          Forgot password
-        </a> */}
-      </Form.Item>
-
-      <Form.Item>
-        <Button type="primary" htmlType="submit" className="login-form-button">
-          Log in
-        </Button>
-        <a href="/">Or register now!</a>
-      </Form.Item>
-    </Form>
+    <div className="card-container">
+      <Tabs type="card">
+        <TabPane tab="Login" key="1">
+          <LoginForm handleMethod={onFinishLogin} />
+        </TabPane>
+        <TabPane tab="Sign up" key="2">
+          <LoginForm handleMethod={onFinishSignup} />
+        </TabPane>
+      </Tabs>
+    </div>
   )
 }
 

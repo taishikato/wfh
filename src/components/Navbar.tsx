@@ -12,13 +12,13 @@ const Navbar = () => {
           <Menu.Item>WFH</Menu.Item>
           <Menu.Item>
             <Button type="primary" onClick={() => setModalVisible(true)}>
-              Login
+              Login / Sign up
             </Button>
           </Menu.Item>
         </Menu>
       </div>
       <Modal
-        title="Login / Sign up"
+        // title="Login / Sign up"
         footer={null}
         visible={modalVisible}
         onOk={() => setModalVisible(false)}
