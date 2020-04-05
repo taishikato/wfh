@@ -1,4 +1,5 @@
 import React from 'react'
+import Auth from './components/Auth'
 import Home from './routes/Home'
 import Navbar from './components/Navbar'
 import 'antd/dist/antd.css'
@@ -7,8 +8,10 @@ import 'antd/dist/antd.css'
 function App() {
   return (
     <div className="App">
-      <Navbar />
-      <Home />
+      <Auth>
+        <Navbar />
+        <Home />
+      </Auth>
     </div>
   )
 }

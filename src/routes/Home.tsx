@@ -49,7 +49,6 @@ const Home = () => {
           declarationsData.push({ id: doc.id, ...doc.data() })
         }
       })
-      console.log({ declarationsData })
       setDeclarations(declarationsData)
     }
     getDeclarations()
